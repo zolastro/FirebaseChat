@@ -1,0 +1,6 @@
+<div  *ngFor="let contact of contacts | async">
+
+  <div >
+    <a [routerLink]="['./../conversations', contact.uid ]">{{ contact.name }}</a>
+  </div>
+</div>
