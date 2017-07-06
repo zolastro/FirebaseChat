@@ -40,7 +40,7 @@ export class ContactsComponent implements OnInit{
 
   ngOnInit() {
     this.contacts = this.contactsService.getItems();
-    }
+  }
 
   constructor(public db: AngularFireDatabase, public afAuth: AngularFireAuth,
     public snackBar: MdSnackBar, public contactsService: ContactsService) {
@@ -103,6 +103,7 @@ export class ContactsComponent implements OnInit{
 
   login() {
     this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    console.log("User logged");
   }
 
   logout() {

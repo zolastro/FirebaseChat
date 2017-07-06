@@ -4,6 +4,7 @@ import { Observable } from 'rxjs/Observable';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { MdSnackBar } from '@angular/material';
+import { ConversationsService } from './conversations.service';
 import * as firebase from 'firebase';
 
 const LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
@@ -33,7 +34,9 @@ export class ConversationComponent {
     });
   }
 
-  constructor(private route: ActivatedRoute, public db: AngularFireDatabase, public afAuth: AngularFireAuth, public snackBar: MdSnackBar) {
+  constructor(private route: ActivatedRoute, public db: AngularFireDatabase,
+    public afAuth: AngularFireAuth, public snackBar: MdSnackBar,
+    private conversationsService: ConversationsService) {
     this.user = afAuth.authState;
     this.user.subscribe((user: firebase.User) => {
       console.log("User loged " + user);
@@ -43,46 +46,8 @@ export class ConversationComponent {
         this.profilePicStyles = {
           'background-image':  `url(${this.currentUser.photoURL})`
         };
+        this.messages = this.conversationsService.getConversation(this.getConversationKey());
 
-        // We load currently existing chat messages.
-        console.log('/messages/' + this.getConversationKey());
-        this.messages = this.db.list('/messages/' + this.getConversationKey(), {
-          query: {
-            limitToLast: 12
-          }
-        });
-        this.messages.subscribe((messages) => {
-          // Calculate list of recently discussed topics
-          console.log(messages);
-          const topicsMap = {};
-          const topics = [];
-          let hasEntities = false;
-          messages.forEach((message) => {
-            if (message.entities) {
-              for (let entity of message.entities) {
-                if (!topicsMap.hasOwnProperty(entity.name)) {
-                  topicsMap[entity.name] = 0
-                }
-                topicsMap[entity.name] += entity.salience;
-                hasEntities = true;
-              }
-            }
-          });
-          if (hasEntities) {
-            for (let name in topicsMap) {
-              topics.push({ name, score: topicsMap[name] });
-            }
-            topics.sort((a, b) => b.score - a.score);
-            this.topics = topics.map((topic) => topic.name).join(', ');
-          }
-
-          // Make sure new message scroll into view
-          setTimeout(() => {
-            const messageList = document.getElementById('messages');
-            messageList.scrollTop = messageList.scrollHeight;
-            document.getElementById('message').focus();
-          }, 500);
-        });
 
         // We save the Firebase Messaging Device token and enable notifications.
         this.saveMessagingDeviceToken();

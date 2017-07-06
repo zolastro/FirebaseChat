@@ -28,9 +28,10 @@ import { ContactsComponent } from './contacts/contacts.component';
 import { StylizePipe } from './stylize.pipe';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
-import { ConversationComponent } from './converations/conversations.component';
+import { ConversationComponent } from './conversations/conversations.component';
 
 import { ContactsService } from './contacts/contacts.service';
+import { ConversationsService } from './conversations/conversations.service';
 
 const configErrMsg = `You have not configured and imported the Firebase SDK.
 Make sure you go through the codelab setup instructions.`;
@@ -67,7 +68,7 @@ if (!environment.firebase) {
     AngularFireAuthModule,
     AppRoutingModule,
   ],
-  providers: [ContactsService],
+  providers: [ContactsService, ConversationsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
